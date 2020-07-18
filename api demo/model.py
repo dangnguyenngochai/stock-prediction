@@ -12,7 +12,13 @@ from tensorflow.keras.models import Sequential, load_model
 
 app = Flask(__name__)
 CORS(app)
-
+params = {
+    "batch_size": 8,
+    "epochs": 100,
+    "lr": 0.0001,
+    "time_steps": 15,
+    "delta_t": 4
+}
 TIME_STEPS = 15
 DELTA_T = 4
 SRCDIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +35,17 @@ def _fetch_data(stock_name, start_date, end_date, with_date=False):
     else:
         data = df.filter(['High', 'Low', 'Open', 'Close', 'Volume'])
     return data
-
+	
+@app.route('/upload_params')
+def upload_params():
+    params["time_steps"] = request.args.get('timestamp')
+    params["epochs"] = request.args.get('epoch')
+    params["lr"] = request.args.get('learningrate')
+    return {
+        'time_steps': params["time_steps"],
+        'epochs': params["epochs"],
+        'lr': params["lr"],
+    }
 
 @app.route('/fetch_data')
 def fetch_data():
