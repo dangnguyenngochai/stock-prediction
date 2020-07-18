@@ -80,7 +80,7 @@ def predict():
         date_list += [next_date.strftime('%Y-%m-%d')]
 
     dataset = _fetch_data(stock_name, start_date_str, end_date_str)
-    import pdb; pdb.set_trace()
+
     if current_date:
         dataset = dataset.tail(15)
     else:
@@ -91,8 +91,6 @@ def predict():
         dataset = pd.concat([dataset.iloc[-15:-1], new_entry], ignore_index=True)
     data = _data_preprocessing(dataset, time_steps, delta_t)
     model = _fetch_model(stock_name, time_steps, delta_t)
-    import pdb;
-    pdb.set_trace()
     pred = model.predict(data)
 
     return {
