@@ -34,7 +34,7 @@ def fetch_data():
     stock_name = request.args.get('stock_name')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    dataset = _fetch_data(stock_name, start_date, end_date)
+    dataset = _fetch_data(stock_name, start_date, end_date, with_date=True)
     date = dataset['Date']
     volume = dataset['Volume']
     stock_values = dataset[['Open', 'Close', 'Low', 'High']]
@@ -91,6 +91,8 @@ def predict():
         dataset = pd.concat([dataset.iloc[-15:-1], new_entry], ignore_index=True)
     data = _data_preprocessing(dataset, time_steps, delta_t)
     model = _fetch_model(stock_name, time_steps, delta_t)
+    import pdb;
+    pdb.set_trace()
     pred = model.predict(data)
 
     return {
