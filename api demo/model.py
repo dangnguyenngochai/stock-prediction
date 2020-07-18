@@ -12,11 +12,13 @@ from tensorflow.keras.models import Sequential, load_model
 
 app = Flask(__name__)
 CORS(app)
+
 TIME_STEPS = 15
 DELTA_T = 4
 SRCDIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUTDIR = os.path.join(SRCDIR, 'output')
-
+scaler = MinMaxScaler(feature_range=(0, 1))
+index = 3 # index of predicted value, i.e: Close index here
 
 def _fetch_data(stock_name, start_date, end_date, with_date=False):
     df = web.DataReader(stock_name, data_source='yahoo', start=start_date, end=end_date)
@@ -48,13 +50,16 @@ def _fetch_model(stock_name, time_steps=TIME_STEPS, delta_t=DELTA_T):
 
 def _data_preprocessing(dataset, time_steps=TIME_STEPS, delta_t=DELTA_T):
     unscaled_data = dataset.values
-    scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_data = scaler.fit_transform(unscaled_data)
     dim_0 = scaled_data.shape[0] - time_steps - delta_t
     dim_1 = scaled_data.shape[1]
     data = scaled_data.reshape((dim_0, time_steps, dim_1))
     return data
 
+
+def _postpropcessing(pred):
+    _pred = (pred * scaler.data_range_[index]) + scaler.data_min_[index]
+    return _pred
 
 @app.route('/predict')
 def predict():
@@ -92,7 +97,7 @@ def predict():
     data = _data_preprocessing(dataset, time_steps, delta_t)
     model = _fetch_model(stock_name, time_steps, delta_t)
     pred = model.predict(data)
-
+    pred = _postpropcessing(pred)
     return {
         'data': pred.tolist(),
         'date': date_list,
