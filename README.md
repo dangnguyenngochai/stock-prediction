@@ -5,4 +5,5 @@
 - set FLASK_APP=model.py
 - set FLASK_ENV=development
 - flask run
-#  Linux: change the 'set' into 'export'
+#  Linux: 
+change the 'set' into 'export'
