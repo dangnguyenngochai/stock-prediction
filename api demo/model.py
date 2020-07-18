@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 from datetime import datetime
 from datetime import timedelta
@@ -10,6 +11,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential, load_model
 
 app = Flask(__name__)
+CORS(app)
 TIME_STEPS = 15
 DELTA_T = 4
 SRCDIR = os.path.dirname(os.path.abspath(__file__))
